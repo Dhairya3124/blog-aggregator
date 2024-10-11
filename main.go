@@ -3,20 +3,37 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
-	config "github.com/Dhairya3124/blog-aggregator/internal/config"
+	"github.com/Dhairya3124/blog-aggregator/internal/command"
+	"github.com/Dhairya3124/blog-aggregator/internal/state"
 )
 
 func main() {
-	configDetails, err := config.Read()
-	if err != nil {
-		log.Fatalf(" Following Error %v", err)
+	s:=state.New()
+	commands := command.NewCommands()
+	args := os.Args
+	fmt.Println(args)
+
+	if len(args) < 2 {
+		log.Fatal("Not enough arguments specified")
 	}
-	configDetails.SetUser("Dhairya")
-	configDetails, err = config.Read()
-	if err != nil {
-		log.Fatalf(" Following Error %v", err)
-	}
-	fmt.Println(configDetails)
+
+	commands.Run(&s, command.Command{
+		Name: args[1],
+		Args: args[2:],
+	})
+
+
+	// configDetails, err := config.Read()
+	// if err != nil {
+	// 	log.Fatalf(" Following Error %v", err)
+	// }
+	// configDetails.SetUser("Dhairya")
+	// configDetails, err = config.Read()
+	// if err != nil {
+	// 	log.Fatalf(" Following Error %v", err)
+	// }
+	fmt.Println(s.Config)
 
 }

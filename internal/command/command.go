@@ -19,7 +19,7 @@ func handlerLogin(s *state.State,cmd Command)error{
 	if len(cmd.Args) == 0 {
 		return fmt.Errorf("login expects a single argument")
 	}else{
-		err:=s.Config.SetUser(cmd.Args[1])
+		err:=s.Config.SetUser(cmd.Args[0])
 		if err != nil {
 			return err
 		}else{
@@ -33,7 +33,7 @@ func (c *Commands)register(name string,f func(*state.State,Command)error){
 	c.Handlers[name] = f
 
 }
-func (c *Commands)run(s *state.State,cmd Command) error{
+func (c *Commands)Run(s *state.State,cmd Command) error{
 	handler := c.Handlers[cmd.Name]
 
 	err := handler(s, cmd)
