@@ -7,6 +7,7 @@ import (
 
 	"github.com/Dhairya3124/blog-aggregator/internal/command"
 	"github.com/Dhairya3124/blog-aggregator/internal/state"
+	_ "github.com/lib/pq"
 )
 
 func main() {
