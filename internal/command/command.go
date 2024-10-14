@@ -76,6 +76,17 @@ func handlerRegister(s *state.State, cmd Command) error {
 	return nil
 
 }
+func handlerReset(s *state.State,cmd Command)error{
+	
+		err:=s.DB.DelUsers(context.Background())
+		if err != nil {
+			return err
+		}
+
+	
+	return nil
+
+}
 func (c *Commands) register(name string, f func(*state.State, Command) error) {
 	c.Handlers[name] = f
 
@@ -97,5 +108,6 @@ func NewCommands() Commands {
 
 	commands.register("login", handlerLogin)
 	commands.register("register", handlerRegister)
+	commands.register("reset",handlerReset)
 	return commands
 }
