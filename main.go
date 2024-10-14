@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 
@@ -23,7 +22,6 @@ func main() {
 	s.DB = dbQueries
 	commands := command.NewCommands()
 	args := os.Args
-	fmt.Println(args)
 	if len(args) < 2 {
 		log.Fatal("Not enough arguments specified")
 	}
@@ -31,6 +29,5 @@ func main() {
 		Name: args[1],
 		Args: args[2:],
 	})
-	fmt.Println(s.Config)
 
 }

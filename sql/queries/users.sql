@@ -12,3 +12,6 @@ select * from users where name = $1;
 
 -- name: DelUsers :exec
 DELETE FROM users;
+
+-- name: GetUsers :many
+select * from users;

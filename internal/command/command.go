@@ -87,6 +87,28 @@ func handlerReset(s *state.State,cmd Command)error{
 	return nil
 
 }
+func handlerUsers(s *state.State,cmd Command)error{
+	
+	users,err:=s.DB.GetUsers(context.Background())
+	if err != nil {
+		return err
+	}else{
+		const appendCurrent = "(current)"
+		for user:= range users{
+			if(s.Config.CurrentUserName == users[user].Name){
+				fmt.Printf("%v %v\n",users[user].Name,appendCurrent)
+			}else{
+				fmt.Printf("%v \n",users[user].Name)
+			}
+			
+		}
+		
+	}
+
+
+return nil
+
+}
 func (c *Commands) register(name string, f func(*state.State, Command) error) {
 	c.Handlers[name] = f
 
@@ -109,5 +131,6 @@ func NewCommands() Commands {
 	commands.register("login", handlerLogin)
 	commands.register("register", handlerRegister)
 	commands.register("reset",handlerReset)
+	commands.register("users",handlerUsers)
 	return commands
 }
