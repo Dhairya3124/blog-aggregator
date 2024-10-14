@@ -46,7 +46,7 @@ func handlerRegister(s *state.State, cmd Command) error {
 	} else {
 		username := cmd.Args[0]
 		user, _ := s.DB.GetUser(context.Background(), username)
-		
+
 		if user.Name != "" {
 			return fmt.Errorf("the username %v already exists", username)
 		}
@@ -76,37 +76,35 @@ func handlerRegister(s *state.State, cmd Command) error {
 	return nil
 
 }
-func handlerReset(s *state.State,cmd Command)error{
-	
-		err:=s.DB.DelUsers(context.Background())
-		if err != nil {
-			return err
-		}
+func handlerReset(s *state.State, cmd Command) error {
 
-	
+	err := s.DB.DelUsers(context.Background())
+	if err != nil {
+		return err
+	}
+
 	return nil
 
 }
-func handlerUsers(s *state.State,cmd Command)error{
-	
-	users,err:=s.DB.GetUsers(context.Background())
+func handlerUsers(s *state.State, cmd Command) error {
+
+	users, err := s.DB.GetUsers(context.Background())
 	if err != nil {
 		return err
-	}else{
+	} else {
 		const appendCurrent = "(current)"
-		for user:= range users{
-			if(s.Config.CurrentUserName == users[user].Name){
-				fmt.Printf("%v %v\n",users[user].Name,appendCurrent)
-			}else{
-				fmt.Printf("%v \n",users[user].Name)
+		for user := range users {
+			if s.Config.CurrentUserName == users[user].Name {
+				fmt.Printf("%v %v\n", users[user].Name, appendCurrent)
+			} else {
+				fmt.Printf("%v \n", users[user].Name)
 			}
-			
+
 		}
-		
+
 	}
 
-
-return nil
+	return nil
 
 }
 func (c *Commands) register(name string, f func(*state.State, Command) error) {
@@ -130,7 +128,7 @@ func NewCommands() Commands {
 
 	commands.register("login", handlerLogin)
 	commands.register("register", handlerRegister)
-	commands.register("reset",handlerReset)
-	commands.register("users",handlerUsers)
+	commands.register("reset", handlerReset)
+	commands.register("users", handlerUsers)
 	return commands
 }
