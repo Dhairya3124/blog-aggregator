@@ -119,6 +119,9 @@ func handlerRSSFeed(s *state.State, cmd Command) error {
 	return nil
 
 }
+func handleShowRSSFeed(s *state.State, cmd Command) error {
+	return nil
+}
 func (c *Commands) register(name string, f func(*state.State, Command) error) {
 	c.Handlers[name] = f
 
@@ -144,5 +147,6 @@ func NewCommands() Commands {
 	commands.register("reset", handlerReset)
 	commands.register("users", handlerUsers)
 	commands.register("agg",handlerRSSFeed)
+	commands.register("addfeed",handleShowRSSFeed)
 	return commands
 }
