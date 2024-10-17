@@ -7,8 +7,10 @@ import (
 	"time"
 
 	"github.com/Dhairya3124/blog-aggregator/internal/database"
-	"github.com/Dhairya3124/blog-aggregator/internal/state"
 	"github.com/Dhairya3124/blog-aggregator/internal/rss"
+	"github.com/Dhairya3124/blog-aggregator/internal/state"
+
+	// "github.com/Dhairya3124/blog-aggregator/internal/rss"
 	"github.com/google/uuid"
 )
 
@@ -108,7 +110,8 @@ func handlerUsers(s *state.State, cmd Command) error {
 	return nil
 
 }
-func handlerRSSFeed(s *state.State, cmd Command) error {
+
+func handlerAggregateRSSFeed(s *state.State, cmd Command) error {
 	const feedURL = "https://www.wagslane.dev/index.xml"
 	rssResponse,err:=rss.FetchFeed(context.Background(),feedURL)
 	if err != nil {
@@ -119,7 +122,43 @@ func handlerRSSFeed(s *state.State, cmd Command) error {
 	return nil
 
 }
-func handleShowRSSFeed(s *state.State, cmd Command) error {
+func handlerRSSFeed(s *state.State, cmd Command) error {
+	if len(cmd.Args) == 0 {
+		return fmt.Errorf("login expects a single argument")
+	}else if len(cmd.Args) == 1{
+		return fmt.Errorf("it expects two arguments")
+	}else{
+		name:=cmd.Args[0]
+		url:=cmd.Args[1]
+		
+		id := uuid.New()
+		created_at := time.Now()
+		updated_at := time.Now()
+		user, _ := s.DB.GetUser(context.Background(), s.Config.CurrentUserName)
+		userId := user.ID
+		query_for_creating_feed:=database.CreateFeedParams{
+			ID: id,
+			Name: name,
+			Url: url,
+			CreatedAt: created_at,
+			UpdatedAt: updated_at,
+			UserID: userId,
+		}
+
+		newFeed,err:=s.DB.CreateFeed(context.Background(),query_for_creating_feed)
+		if err != nil {
+			return  err
+		}
+		fmt.Println(newFeed)
+	}
+	return nil
+}
+func handlerShowRSSFeed(s *state.State, cmd Command) error {
+	feeds,err:=s.DB.GetFeeds(context.Background())
+	if err != nil {
+		return err
+	}
+	fmt.Println(feeds)
 	return nil
 }
 func (c *Commands) register(name string, f func(*state.State, Command) error) {
@@ -146,7 +185,8 @@ func NewCommands() Commands {
 	commands.register("register", handlerRegister)
 	commands.register("reset", handlerReset)
 	commands.register("users", handlerUsers)
-	commands.register("agg",handlerRSSFeed)
-	commands.register("addfeed",handleShowRSSFeed)
+	commands.register("agg",handlerAggregateRSSFeed)
+	commands.register("addfeed",handlerRSSFeed)
+	commands.register("feeds",handlerShowRSSFeed)
 	return commands
 }
