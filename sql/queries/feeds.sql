@@ -15,3 +15,6 @@ select * from feeds where name = $1;
 
 -- name: GetFeeds :many
 select f.name,f.url,u.name from feeds f join users u on f.user_id = u.id;
+
+-- name: GetFeedByURL :one
+select * from feeds where url = $1;

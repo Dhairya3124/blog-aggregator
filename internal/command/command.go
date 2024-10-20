@@ -161,6 +161,36 @@ func handlerShowRSSFeed(s *state.State, cmd Command) error {
 	fmt.Println(feeds)
 	return nil
 }
+func handlerFollowRSSFeed(s *state.State, cmd Command) error {
+	if len(cmd.Args) == 0 {
+		return fmt.Errorf("follow expects a url")
+	}
+	feedURL:=cmd.Args[0]
+	feed,err:=s.DB.GetFeedByURL(context.Background(),feedURL)
+	if err != nil {
+		return err
+	}else{
+		id:=uuid.New()
+		created_at:=time.Now()
+		updated_at:=time.Now()
+		user, _ := s.DB.GetUser(context.Background(), s.Config.CurrentUserName)
+		userId:=user.ID
+		feedId := feed.ID
+		query_for_creating_follow:=database.CreateFeedFollowParams{
+			ID: id,
+			CreatedAt: created_at,
+			UpdatedAt: updated_at,
+			FeedID: feedId,
+			UserID: userId,
+		}
+		follow,err:=s.DB.CreateFeedFollow(context.Background(),query_for_creating_follow)
+		if err != nil {
+			return err
+		}
+		fmt.Println(follow)
+	}
+	return nil
+}
 func (c *Commands) register(name string, f func(*state.State, Command) error) {
 	c.Handlers[name] = f
 
@@ -188,5 +218,6 @@ func NewCommands() Commands {
 	commands.register("agg",handlerAggregateRSSFeed)
 	commands.register("addfeed",handlerRSSFeed)
 	commands.register("feeds",handlerShowRSSFeed)
+	commands.register("follow",handlerFollowRSSFeed)
 	return commands
 }
