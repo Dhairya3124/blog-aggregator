@@ -144,12 +144,24 @@ func handlerRSSFeed(s *state.State, cmd Command) error {
 			UpdatedAt: updated_at,
 			UserID: userId,
 		}
+		
 
 		newFeed,err:=s.DB.CreateFeed(context.Background(),query_for_creating_feed)
 		if err != nil {
 			return  err
 		}
 		fmt.Println(newFeed)
+		query_for_creating_follow:=database.CreateFeedFollowParams{
+			ID: id,
+			CreatedAt: created_at,
+			UpdatedAt: updated_at,
+			FeedID: newFeed.ID,
+			UserID: userId,
+		}
+		_,err=s.DB.CreateFeedFollow(context.Background(),query_for_creating_follow)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -191,6 +203,17 @@ func handlerFollowRSSFeed(s *state.State, cmd Command) error {
 	}
 	return nil
 }
+func handlerFollowingRSSFeed(s *state.State, cmd Command) error {
+	user, _ := s.DB.GetUser(context.Background(), s.Config.CurrentUserName)
+	userId:=user.ID
+	follows,err:=s.DB.GetFollowsForUser(context.Background(),userId)
+	if err != nil {
+		return err
+	}else{
+		fmt.Println(follows)
+	}
+	return nil
+}
 func (c *Commands) register(name string, f func(*state.State, Command) error) {
 	c.Handlers[name] = f
 
@@ -219,5 +242,6 @@ func NewCommands() Commands {
 	commands.register("addfeed",handlerRSSFeed)
 	commands.register("feeds",handlerShowRSSFeed)
 	commands.register("follow",handlerFollowRSSFeed)
+	commands.register("following",handlerFollowingRSSFeed)
 	return commands
 }
