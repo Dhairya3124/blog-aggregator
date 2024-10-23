@@ -14,7 +14,7 @@ func middlewareLoggedIn(handler func(s *state.State, cmd Command, user database.
 
 		user, err := s.DB.GetUser(context.Background(), s.Config.CurrentUserName)
 		if err != nil {
-			return fmt.Errorf("User not found", err)
+			return fmt.Errorf("user not found due to the following error: %v", err)
 		}
 
 		return handler(s, cmd, user)
