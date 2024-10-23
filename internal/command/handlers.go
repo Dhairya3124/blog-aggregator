@@ -3,11 +3,12 @@ package command
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/Dhairya3124/blog-aggregator/internal/database"
 	"github.com/Dhairya3124/blog-aggregator/internal/rss"
 	"github.com/Dhairya3124/blog-aggregator/internal/state"
 	"github.com/google/uuid"
-	"time"
 )
 
 func handlerLogin(s *state.State, cmd Command) error {
@@ -110,7 +111,7 @@ func handlerAggregateRSSFeed(s *state.State, cmd Command) error {
 	return nil
 
 }
-func handlerRSSFeed(s *state.State, cmd Command) error {
+func handlerRSSFeed(s *state.State, cmd Command, user database.User) error {
 	if len(cmd.Args) == 0 {
 		return fmt.Errorf("login expects a single argument")
 	} else if len(cmd.Args) == 1 {
@@ -122,15 +123,13 @@ func handlerRSSFeed(s *state.State, cmd Command) error {
 		id := uuid.New()
 		created_at := time.Now()
 		updated_at := time.Now()
-		user, _ := s.DB.GetUser(context.Background(), s.Config.CurrentUserName)
-		userId := user.ID
 		query_for_creating_feed := database.CreateFeedParams{
 			ID:        id,
 			Name:      name,
 			Url:       url,
 			CreatedAt: created_at,
 			UpdatedAt: updated_at,
-			UserID:    userId,
+			UserID:    user.ID,
 		}
 
 		newFeed, err := s.DB.CreateFeed(context.Background(), query_for_creating_feed)
@@ -143,7 +142,7 @@ func handlerRSSFeed(s *state.State, cmd Command) error {
 			CreatedAt: created_at,
 			UpdatedAt: updated_at,
 			FeedID:    newFeed.ID,
-			UserID:    userId,
+			UserID:    user.ID,
 		}
 		_, err = s.DB.CreateFeedFollow(context.Background(), query_for_creating_follow)
 		if err != nil {
@@ -160,7 +159,7 @@ func handlerShowRSSFeed(s *state.State, cmd Command) error {
 	fmt.Println(feeds)
 	return nil
 }
-func handlerFollowRSSFeed(s *state.State, cmd Command) error {
+func handlerFollowRSSFeed(s *state.State, cmd Command, user database.User) error {
 	if len(cmd.Args) == 0 {
 		return fmt.Errorf("follow expects a url")
 	}
@@ -172,7 +171,6 @@ func handlerFollowRSSFeed(s *state.State, cmd Command) error {
 		id := uuid.New()
 		created_at := time.Now()
 		updated_at := time.Now()
-		user, _ := s.DB.GetUser(context.Background(), s.Config.CurrentUserName)
 		userId := user.ID
 		feedId := feed.ID
 		query_for_creating_follow := database.CreateFeedFollowParams{
@@ -190,8 +188,7 @@ func handlerFollowRSSFeed(s *state.State, cmd Command) error {
 	}
 	return nil
 }
-func handlerFollowingRSSFeed(s *state.State, cmd Command) error {
-	user, _ := s.DB.GetUser(context.Background(), s.Config.CurrentUserName)
+func handlerFollowingRSSFeed(s *state.State, cmd Command, user database.User) error {
 	userId := user.ID
 	follows, err := s.DB.GetFollowsForUser(context.Background(), userId)
 	if err != nil {

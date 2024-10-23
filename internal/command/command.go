@@ -38,9 +38,9 @@ func NewCommands() Commands {
 	commands.register("reset", handlerReset)
 	commands.register("users", handlerUsers)
 	commands.register("agg", handlerAggregateRSSFeed)
-	commands.register("addfeed", handlerRSSFeed)
+	commands.register("addfeed", middlewareLoggedIn(handlerRSSFeed))
 	commands.register("feeds", handlerShowRSSFeed)
-	commands.register("follow", handlerFollowRSSFeed)
-	commands.register("following", handlerFollowingRSSFeed)
+	commands.register("follow", middlewareLoggedIn(handlerFollowRSSFeed))
+	commands.register("following", middlewareLoggedIn(handlerFollowingRSSFeed))
 	return commands
 }
