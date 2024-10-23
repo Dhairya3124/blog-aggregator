@@ -29,6 +29,5 @@ func main() {
 		Name: args[1],
 		Args: args[2:],
 	})
-	
 
 }
