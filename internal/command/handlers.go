@@ -198,3 +198,20 @@ func handlerFollowingRSSFeed(s *state.State, cmd Command, user database.User) er
 	}
 	return nil
 }
+func handlerUnfollowRSSFeed(s *state.State, cmd Command, user database.User) error {
+	if len(cmd.Args) == 0 {
+		return fmt.Errorf("unfollow expects a url")
+	}else{
+		feedURL:=cmd.Args[0]
+		query_for_creating_unfolllow:=database.DeleteFeedFollowParams{
+			UserID: user.ID,
+			Url: feedURL,
+		}
+		err:=s.DB.DeleteFeedFollow(context.Background(),query_for_creating_unfolllow)
+		if err != nil {
+			return err
+		}
+	}
+
+return nil
+}
