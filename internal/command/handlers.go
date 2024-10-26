@@ -101,12 +101,11 @@ func handlerUsers(s *state.State, cmd Command) error {
 }
 
 func handlerAggregateRSSFeed(s *state.State, cmd Command) error {
-	const feedURL = "https://www.wagslane.dev/index.xml"
-	rssResponse, err := rss.FetchFeed(context.Background(), feedURL)
-	if err != nil {
-		return err
+	if len(cmd.Args) == 0{
+		return fmt.Errorf("not enough arguments provided")
+
 	}
-	fmt.Println(rssResponse)
+	rss.ScrapeFeeds(context.Background(),s.DB,cmd.Args[0])
 
 	return nil
 

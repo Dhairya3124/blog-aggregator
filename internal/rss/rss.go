@@ -7,6 +7,9 @@ import (
 	"html"
 	"io"
 	"net/http"
+	"time"
+
+	"github.com/Dhairya3124/blog-aggregator/internal/database"
 )
 
 func FetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
@@ -47,4 +50,26 @@ func FetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 	
 		return &feed, nil
 	
+}
+func ScrapeFeeds(ctx context.Context, db *database.Queries, time_between_reqs string) {
+duration,err:=time.ParseDuration(time_between_reqs)
+if err != nil {
+	fmt.Println("Invalid duration")
+	return
+}
+fmt.Printf("Scraping feeds every %v",time_between_reqs)
+ticker:=time.NewTicker(duration)
+for;;<-ticker.C{
+	feed,err:=db.GetNextFeedToFetch(ctx)
+	if err != nil {
+		fmt.Println("Error in retrieving error")
+		return
+	}
+	fetched,err:=FetchFeed(ctx,feed.Url)
+	if err != nil {
+		fmt.Println("Invalid url for feed")
+		return
+	}
+	fmt.Println(fetched)
+}
 }
