@@ -2,14 +2,18 @@ package rss
 
 import (
 	"context"
+	"database/sql"
 	"encoding/xml"
 	"fmt"
 	"html"
 	"io"
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/Dhairya3124/blog-aggregator/internal/database"
+	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 func FetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
@@ -71,5 +75,30 @@ for;;<-ticker.C{
 		return
 	}
 	fmt.Println(fetched)
+	for _,item:= range fetched.Channel.Item{
+		_, err = db.CreatePost(ctx, database.CreatePostParams{
+			ID:          uuid.New(),
+			Title:       item.Title,
+			Url:         item.Link,
+			Description: sql.NullString{String: item.Description, Valid: true},
+			FeedID:      feed.ID,
+			PublishedAt: time.Now(),
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+		})
+		if err != nil {
+			pgErr, ok := err.(*pq.Error)
+
+				if !ok {
+					log.Fatal("Error saving posts:", err.Error())
+				}
+
+				if ok && pgErr.Code.Name() != "unique_violation" {
+					log.Fatal("Database error saving posts:", err.Error())
+
+				}
+		}
+	}
+
 }
 }

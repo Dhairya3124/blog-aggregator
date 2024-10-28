@@ -4,10 +4,10 @@ CREATE TABLE posts (
     created_at timestamp not null,
     updated_at timestamp not null,
     title text not null,
-    url text not null,
-    description text not null,
+    url text unique not null,
+    description text,
     published_at timestamp not null,
-    feed_id uuid not null references feeds(id)
+    feed_id uuid not null references feeds(id) on delete cascade
 );
 -- +goose Down
 DROP TABLE posts;
