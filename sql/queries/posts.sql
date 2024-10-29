@@ -11,3 +11,13 @@ VALUES(
   $8
 )
 RETURNING *;
+-- name: GetPostsForUser :many
+SELECT p.id,
+       p.title,
+       p.url,
+       p.description
+FROM posts p
+JOIN feed_follows f ON p.feed_id = f.feed_id
+WHERE f.user_id = $1
+order by p.published_at desc
+limit $2;
