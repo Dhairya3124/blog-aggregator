@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/Dhairya3124/blog-aggregator/internal/database"
@@ -210,6 +211,22 @@ func handlerUnfollowRSSFeed(s *state.State, cmd Command, user database.User) err
 		if err != nil {
 			return err
 		}
+	}
+
+return nil
+}
+func handlerBrowsePosts(s *state.State, cmd Command, user database.User) error {
+	var limit int32 = 2
+	if len(cmd.Args) != 0{
+		limitArg,_ := strconv.Atoi(cmd.Args[0])
+		limit = int32(limitArg)
+	}
+	posts,err:=s.DB.GetPostsForUser(context.Background(),database.GetPostsForUserParams{UserID: user.ID,Limit: limit,})
+	if err != nil {
+		return err
+	}
+	for _, post := range posts {
+		fmt.Println("Title:", post.Title, "URL:", post.Url)
 	}
 
 return nil
