@@ -35,7 +35,7 @@ func handlerLogin(s *state.State, cmd Command) error {
 }
 func handlerRegister(s *state.State, cmd Command) error {
 	if len(cmd.Args) == 0 {
-		return fmt.Errorf("login expects a single argument")
+		return fmt.Errorf("register expects a single argument")
 	} else {
 		username := cmd.Args[0]
 		user, _ := s.DB.GetUser(context.Background(), username)
@@ -113,7 +113,7 @@ func handlerAggregateRSSFeed(s *state.State, cmd Command) error {
 }
 func handlerRSSFeed(s *state.State, cmd Command, user database.User) error {
 	if len(cmd.Args) == 0 {
-		return fmt.Errorf("login expects a single argument")
+		return fmt.Errorf("addfeed expects a single argument which is url")
 	} else if len(cmd.Args) == 1 {
 		return fmt.Errorf("it expects two arguments")
 	} else {
