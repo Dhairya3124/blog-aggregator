@@ -1,0 +1,2 @@
+# Blog Aggregator
+This is a simple blog aggregator that fetches the latest posts from a list of blogs and displays them in the cli. The blogs/posts are fetched using their RSS feeds. The aggregator is written in Golang. 
