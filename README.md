@@ -18,5 +18,16 @@ If you want to run the application without installing it, you can run the follow
 ```bash
 go run . <command-name>
 ```
-
+List of commands that can be used with the aggregator:
+- login
+- register
+- reset
+- users
+- agg
+- addfeed
+- feeds
+- follow
+- following
+- unfollow
+- browse
 
